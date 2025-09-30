@@ -75,7 +75,8 @@
            (pos (cdr (assoc :position params)))
            (uri (cdr (assoc :uri doc)))
            (text (or (state:get-file-text state uri) ""))
-           (location (alive/lsp/definition:get-location :text text :pos pos))
+           (lang (state:get-file-lang state uri))
+           (location (alive/lsp/definition:get-location :text text :pos pos :lang lang))
            (uri (first location))
            (range (second location)))
 
@@ -137,7 +138,8 @@
            (pos (cdr (assoc :position params)))
            (uri (cdr (assoc :uri doc)))
            (text (or (state:get-file-text state uri) ""))
-           (hov-text (alive/lsp/hover:get-text :text text :pos pos))
+           (lang (state:get-file-lang state uri))
+           (hov-text (alive/lsp/hover:get-text :text text :pos pos :lang lang))
            (result (if hov-text hov-text "")))
 
         (utils:result id "value" result)))
@@ -257,7 +259,8 @@
            (uri (cdr (assoc :uri doc)))
            (pos (cdr (assoc :position params)))
            (text (or (state:get-file-text state uri) ""))
-           (items (or (sig-help:signatures :text text :pos pos)
+           (lang (state:get-file-lang state uri))
+           (items (or (sig-help:signatures :text text :pos pos :lang lang)
                       (make-array 0))))
 
         (utils:result id "signatures" items)))
@@ -271,6 +274,7 @@
            (uri (cdr (assoc :uri doc)))
            (pos (cdr (assoc :position params)))
            (text (or (state:get-file-text state uri) ""))
-           (locs (alive/sys/xref:get-locations text pos)))
-        (lsp-msg:create-response id
-                                 :result-value (or locs (make-array 0)))))
+           (lang (state:get-file-lang state uri))
+           (locs (alive/sys/xref:get-locations text pos lang)))
+      (lsp-msg:create-response id
+                               :result-value (or locs (make-array 0)))))
