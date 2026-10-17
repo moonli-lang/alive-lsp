@@ -58,7 +58,7 @@
                      (declare (ignore c))
                      (stop state))
 
-        (T (c)
+        (error (c)
            (logger:error-msg (state:get-log state) "Unknown Error: ~A ~A" (type-of c) c)
            (stop state))))
 
